@@ -1,0 +1,256 @@
+<!-- Product Detail Modal -->
+<div id="productModal" class="modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,0.7)">
+    <div class="modal-content" style="background-color:#fff;margin:2% auto;padding:0;width:90%;max-width:900px;border-radius:20px;position:relative;max-height:90vh;overflow-y:auto">
+        
+        <span class="close-modal" onclick="closeModal()" style="position:absolute;right:20px;top:15px;color:#aaa;font-size:28px;font-weight:bold;cursor:pointer;z-index:10">X</span>
+        
+        <div id="modalContent">
+            <div style="padding:50px;text-align:center">
+                <div style="font-size:1.2rem;color:#666">
+                    Loading product details...
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+.modal{animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-content{animation:slideIn .3s}
+@keyframes slideIn{from{transform:translateY(-50px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.close-modal:hover{color:#ff7a00!important}
+
+.product-detail-container{display:flex;flex-wrap:wrap;padding:30px;gap:30px}
+
+.product-detail-image{flex:1;min-width:300px}
+
+.product-detail-image img{width:100%;border-radius:15px;object-fit:cover}
+
+.product-detail-info{flex:1.5;min-width:300px}
+
+.product-detail-info h2{color:#333;font-size:1.8rem;margin-bottom:10px}
+
+.product-detail-price{font-size:2rem;font-weight:700;color:#ff7a00;margin-bottom:15px}
+
+.product-detail-desc{color:#666;line-height:1.6;margin-bottom:20px}
+
+.product-detail-section{margin-bottom:15px}
+
+.product-detail-section h4{color:#333;font-size:1rem;margin-bottom:5px}
+
+.product-detail-section p{color:#666;font-size:.9rem;line-height:1.5}
+
+.product-detail-select{
+width:100%;
+padding:12px;
+border:2px solid #ff7a00;
+border-radius:10px;
+font-size:1rem;
+color:#333;
+background:#fff;
+cursor:pointer;
+margin-bottom:15px
+}
+
+.product-detail-select:focus{outline:none;border-color:#ff5200}
+
+.product-detail-btn{
+width:100%;
+padding:15px;
+background:linear-gradient(135deg,#ff7a00,#ff5200);
+color:#fff;
+border:none;
+border-radius:50px;
+font-size:1.1rem;
+font-weight:600;
+cursor:pointer;
+transition:all .3s ease;
+margin-top:10px
+}
+
+.product-detail-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 5px 20px #ff7a00
+}
+
+.related-products{
+padding:0 30px 30px;
+border-top:1px solid #eee;
+padding-top:20px
+}
+
+.related-products h3{
+color:#333;
+font-size:1.3rem;
+margin-bottom:15px
+}
+
+.related-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px
+}
+
+.related-card{
+background:#fff;
+border-radius:15px;
+padding:15px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+cursor:pointer;
+transition:all .3s ease
+}
+
+.related-card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 25px rgba(0,0,0,.15)
+}
+
+.related-card img{
+width:100%;
+height:80px;
+object-fit:cover;
+border-radius:10px;
+margin-bottom:10px
+}
+
+.related-card h5{
+color:#333;
+font-size:.9rem;
+margin-bottom:5px
+}
+
+.related-card .price{
+color:#ff7a00;
+font-weight:600;
+font-size:.85rem
+}
+
+@media(max-width:768px){
+.related-grid{grid-template-columns:repeat(2,1fr)}
+.product-detail-container{padding:20px}
+}
+</style>
+
+<script>
+
+var isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+
+function openProductModal(productId, category) {
+
+    var modal = document.getElementById('productModal');
+    if (!modal) return;
+
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    var modalContent = document.getElementById('modalContent');
+
+    if (modalContent)
+        modalContent.innerHTML = '<div style="padding:50px;text-align:center"><div style="font-size:1.2rem;color:#666">Loading...</div></div>';
+
+    fetch('/product/' + productId + '/' + category)
+    .then(function(r){return r.json()})
+    .then(function(data){
+
+        if (data.error || !data.product) {
+            if (modalContent)
+                modalContent.innerHTML = '<div style="padding:50px;text-align:center;color:red">Product not found</div>';
+            return;
+        }
+
+        var p = data.product;
+        var rel = data.related_products || [];
+
+        if (!p.variants || !p.variants.length || !p.variants[0]) {
+            if (modalContent)
+                modalContent.innerHTML = '<div style="padding:50px;text-align:center;color:red">No variants</div>';
+            return;
+        }
+
+        var relHtml = '';
+
+        rel.forEach(function(x){
+            if (x && x.variants && x.variants[0])
+                relHtml += '<div class="related-card" onclick="event.stopPropagation();openProductModal('+x.id+',&#39;'+category+'&#39;)"><img src="'+(x.image||'')+'"><h5>'+(x.name||'')+'</h5><div class="price">Rs.'+x.variants[0].price+'</div></div>';
+        });
+
+        var optHtml = '';
+
+        p.variants.forEach(function(v){
+            if(v.weight)
+                optHtml += '<option value="'+v.weight+'|'+v.price+'">'+v.weight+' - Rs.'+v.price+'</option>';
+        });
+
+        var auth = '';
+
+        if (isAuthenticated) {
+            var selectedWeight = p.variants[0].weight;
+            var selectedPrice = p.variants[0].price;
+            auth = '<form method="POST" action="/add_to_cart" style="display:inline;" id="modalAddToCartForm">' +
+                '<input type="hidden" name="product_name" value="' + (p.name || '') + '">' +
+                '<input type="hidden" name="weight" value="' + selectedWeight + '">' +
+                '<input type="hidden" name="price" value="' + selectedPrice + '">' +
+                '<input type="hidden" name="image" value="' + (p.image || '') + '">' +
+                '<button type="submit" class="product-detail-btn">Add to Cart</button>' +
+                '</form>';
+        } else {
+            auth = '<a href="/login" class="product-detail-btn" style="display:block;text-align:center;text-decoration:none">Login to Buy</a>';
+        }
+
+        if (modalContent)
+            modalContent.innerHTML =
+            '<div class="product-detail-container">'+
+            '<div class="product-detail-image"><img src="'+(p.image||'')+'"></div>'+
+            '<div class="product-detail-info">'+
+            '<h2>'+(p.name||'')+'</h2>'+
+            '<div class="product-detail-price" id="modalPrice">Rs.'+p.variants[0].price+'</div>'+
+            '<p class="product-detail-desc">'+(p.description||'')+'</p>'+
+            '<div class="product-detail-section"><h4>Health Benefits</h4><p>'+(p.benefits||'')+'</p></div>'+
+            '<div class="product-detail-section"><h4>Ingredients</h4><p>'+(p.ingredients||'')+'</p></div>'+
+            '<select class="product-detail-select" id="modalWeightSelect" onchange="updateModalPrice()">'+optHtml+'</select>'+
+            auth+
+            '</div></div>'+
+            '<div class="related-products"><h3>Related Products</h3><div class="related-grid">'+relHtml+'</div></div>';
+
+    });
+}
+
+function updateModalPrice(){
+
+    var sel = document.getElementById('modalWeightSelect');
+    if (!sel || !sel.value) return;
+
+    var parts = sel.value.split('|');
+    var weight = parts[0];
+    var price = parts[1];
+
+    var priceEl = document.getElementById('modalPrice');
+    if (priceEl) priceEl.innerText = 'Rs.' + price;
+
+    // Update the form values if form exists
+    var form = document.getElementById('modalAddToCartForm');
+    if (form) {
+        form.querySelector('input[name="weight"]').value = weight;
+        form.querySelector('input[name="price"]').value = price;
+    }
+}
+
+function closeModal(){
+    var m = document.getElementById('productModal');
+    if (m) m.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+    var m = document.getElementById('productModal');
+    if (m) m.addEventListener('click', function(e){
+        if(e.target===m) closeModal();
+    });
+});
+
+</script>

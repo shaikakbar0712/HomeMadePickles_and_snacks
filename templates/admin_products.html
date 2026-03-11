@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #fff7e6, #fff); min-height: 100vh; }
+        
+        nav {
+            position: fixed; top: 0; width: 100%; background: linear-gradient(135deg, #ff7a00, #ff5200);
+            padding: 15px 50px; display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 5px; transition: all 0.3s; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        
+        .page-header {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('/static/images/Background.jpg');
+            background-size: cover; background-position: center; padding: 120px 50px 40px;
+            text-align: center; color: white;
+        }
+        
+        .container { padding: 40px 50px; max-width: 1400px; margin: 0 auto; }
+        
+        .tabs {
+            display: flex; gap: 10px; margin-bottom: 30px; background: white;
+            padding: 10px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tab {
+            padding: 12px 30px; background: transparent; border: none;
+            border-radius: 8px; cursor: pointer; font-weight: 600;
+            transition: all 0.3s; font-size: 1rem;
+        }
+        .tab.active { background: linear-gradient(135deg, #ff7a00, #ff5200); color: white; }
+        .tab:hover { background: #fff7e6; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Add Product Form */
+        .form-card {
+            background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px; margin-bottom: 30px;
+        }
+        .form-card h2 { color: #ff7a00; margin-bottom: 30px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        
+        .form-group label {
+            display: block; margin-bottom: 8px; color: #333;
+            font-weight: 600; font-size: 0.95rem;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 1rem; transition: all 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #ff7a00;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        .variant-section {
+            background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px;
+        }
+        .variant-row {
+            display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px;
+            margin-bottom: 15px; align-items: end;
+        }
+        .add-variant-btn, .remove-variant-btn {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: 600; transition: all 0.3s;
+        }
+        .add-variant-btn {
+            background: #28a745; color: white; width: 100%;
+        }
+        .remove-variant-btn {
+            background: #dc3545; color: white; padding: 10px 15px;
+        }
+        
+        .btn-submit {
+            width: 100%; padding: 15px; background: linear-gradient(135deg, #ff7a00, #ff5200);
+            color: white; border: none; border-radius: 10px; font-size: 1.1rem;
+            font-weight: 600; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,122,0,0.4); }
+        
+        /* Products List */
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden; transition: all 0.3s;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        
+        .product-image {
+            width: 100%; height: 200px; object-fit: cover;
+        }
+        .product-info { padding: 20px; }
+        .product-name { font-size: 1.2rem; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .product-category {
+            display: inline-block; padding: 4px 12px; background: #ff7a00;
+            color: white; border-radius: 20px; font-size: 0.8rem; margin-bottom: 10px;
+        }
+        .product-description { color: #666; font-size: 0.9rem; margin-bottom: 12px; }
+        .product-variants { font-size: 0.85rem; color: #888; margin-bottom: 12px; }
+        
+        .product-actions {
+            display: flex; gap: 10px; margin-top: 15px;
+        }
+        .btn-edit, .btn-delete {
+            flex: 1; padding: 10px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: 600; transition: all 0.3s;
+        }
+        .btn-edit { background: #2874f0; color: white; }
+        .btn-delete { background: #dc3545; color: white; }
+        
+        .new-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: #ff3f6c; color: white; padding: 5px 12px;
+            border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+        }
+        
+        .flash-messages { position: fixed; top: 80px; right: 20px; z-index: 2000; }
+        .flash {
+            padding: 15px 25px; border-radius: 10px; margin-bottom: 10px;
+            animation: slideIn 0.3s ease; color: white; font-weight: 500;
+        }
+        .flash.success { background: linear-gradient(135deg, #28a745, #20c997); }
+        .flash.error { background: linear-gradient(135deg, #dc3545, #e74c3c); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .variant-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/admin" class="logo">🍲 Admin Panel</a>
+        <div class="nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/products">Products</a>
+            <a href="/home">Home</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="page-header">
+        <h1>Product Management</h1>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('add')">➕ Add New Product</button>
+            <button class="tab" onclick="switchTab('list')">📦 All Products</button>
+        </div>
+
+        <!-- Add Product Tab -->
+        <div id="add-tab" class="tab-content active">
+            <div class="form-card">
+                <h2>Add New Product</h2>
+                <form method="POST" action="/admin/products/add" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Product Name *</label>
+                            <input type="text" id="name" name="name" required placeholder="e.g., Gongura Pickle">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="category">Category *</label>
+                            <select id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="veg">Veg Pickles</option>
+                                <option value="nonveg">Non-Veg Pickles</option>
+                                <option value="snacks">Snacks</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="description">Description *</label>
+                            <textarea id="description" name="description" required placeholder="Detailed product description..."></textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="benefits">Health Benefits</label>
+                            <textarea id="benefits" name="benefits" placeholder="e.g., Rich in Iron, Vitamins C & K, Aids Digestion"></textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="ingredients">Ingredients</label>
+                            <textarea id="ingredients" name="ingredients" placeholder="e.g., Gongura Leaves, Red Chilli Powder, Salt, Garlic"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="shelf_life">Shelf Life</label>
+                            <input type="text" id="shelf_life" name="shelf_life" placeholder="e.g., 6 months">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="storage">Storage Instructions</label>
+                            <input type="text" id="storage" name="storage" placeholder="e.g., Store in cool, dry place">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="image">Product Image URL</label>
+                            <input type="text" id="image" name="image" placeholder="/static/images/product.jpg">
+                        </div>
+                    </div>
+                    
+                    <div class="variant-section">
+                        <h3 style="margin-bottom: 15px;">Product Variants (Weight & Price)</h3>
+                        <div id="variants-container">
+                            <div class="variant-row">
+                                <div class="form-group">
+                                    <label>Weight</label>
+                                    <input type="text" name="variant_weight[]" placeholder="e.g., 250g" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Price (₹)</label>
+                                    <input type="number" name="variant_price[]" placeholder="e.g., 220" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="add-variant-btn" onclick="addVariant()">+ Add Another Variant</button>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Add Product</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Products List Tab -->
+        <div id="list-tab" class="tab-content">
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card" style="position: relative;">
+                    {% if product[10] == 1 %}
+                    <span class="new-badge">NEW</span>
+                    {% endif %}
+                    <img src="{{ product[8] if product[8] else '/static/images/Background.jpg' }}" alt="{{ product[1] }}" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product[1] }}</h3>
+                        <span class="product-category">
+                            {% if product[2] == 'veg' %}Veg Pickles
+                            {% elif product[2] == 'nonveg' %}Non-Veg Pickles
+                            {% else %}Snacks{% endif %}
+                        </span>
+                        <p class="product-description">{{ product[3][:100] }}...</p>
+                        <div class="product-variants">
+                            <strong>Variants:</strong> {{ product[9] }}
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-edit" onclick="editProduct({{ product[0] }})">Edit</button>
+                            <a href="/admin/products/delete/{{ product[0] }}" class="btn-delete" onclick="return confirm('Delete this product?')">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'add') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('add-tab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('list-tab').classList.add('active');
+            }
+        }
+        
+        function addVariant() {
+            const container = document.getElementById('variants-container');
+            const variantRow = document.createElement('div');
+            variantRow.className = 'variant-row';
+            variantRow.innerHTML = `
+                <div class="form-group">
+                    <label>Weight</label>
+                    <input type="text" name="variant_weight[]" placeholder="e.g., 500g" required>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" name="variant_price[]" placeholder="e.g., 400" required>
+                </div>
+                <button type="button" class="remove-variant-btn" onclick="removeVariant(this)">✕</button>
+            `;
+            container.appendChild(variantRow);
+        }
+        
+        function removeVariant(btn) {
+            btn.parentElement.remove();
+        }
+        
+        function editProduct(id) {
+            alert('Edit functionality coming soon! Product ID: ' + id);
+        }
+        
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(f => f.style.display = 'none');
+        }, 3000);
+    </script>
+</body>
+</html>

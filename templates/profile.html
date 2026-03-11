@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - HomeMade Pickles & Snacks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background: linear-gradient(135deg, #fff7e6, #fff); min-height: 100vh; }
+        
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: linear-gradient(135deg, #ff7a00, #ff5200);
+            padding: 15px 50px; display: flex; justify-content: space-between;
+            align-items: center; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .logo { font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 5px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        
+        .page-header {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('/static/images/Background.jpg');
+            background-size: cover; background-position: center;
+            padding: 120px 50px 60px; text-align: center; color: white;
+        }
+        .page-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .user-greeting { font-size: 1.2rem; opacity: 0.9; }
+        
+        .profile-container { padding: 40px 50px; max-width: 1200px; margin: 0 auto; }
+        
+        .tabs { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 15px 30px; background: white; border: none; border-radius: 50px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .tab-btn:hover, .tab-btn.active {
+            background: linear-gradient(135deg, #ff7a00, #ff5200); color: white; transform: translateY(-2px);
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
+        .card-header { background: linear-gradient(135deg, #ff7a00, #ff5200); padding: 20px 25px; color: white; }
+        .card-header h3 { font-size: 1.3rem; }
+        .card-body { padding: 25px; }
+        
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #eee; transition: all 0.3s ease; }
+        .order-item:hover { background: #f9f9f9; }
+        .order-item:last-child { border-bottom: none; }
+        .order-info h4 { color: #333; margin-bottom: 5px; }
+        .order-info p { color: #666; font-size: 0.9rem; }
+        .order-price { text-align: right; }
+        .order-total { font-size: 1.2rem; font-weight: 700; color: #ff7a00; }
+        .order-date { font-size: 0.85rem; color: #999; }
+        
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-top: 5px; }
+        .status-badge.pending { background: #fff3cd; color: #856404; }
+        .status-badge.confirmed { background: #d4edda; color: #155724; }
+        .status-badge.rejected { background: #f8d7da; color: #721c24; }
+        .status-badge.delivered { background: #cce5ff; color: #004085; }
+        
+        .coupon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .coupon-card {
+            background: linear-gradient(135deg, #fff7e6, #fff); border: 2px dashed #ff7a00;
+            border-radius: 15px; padding: 25px; text-align: center; transition: all 0.3s ease; cursor: pointer;
+        }
+        .coupon-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255,122,0,0.2); }
+        .coupon-code { font-size: 1.5rem; font-weight: 700; color: #ff7a00; margin-bottom: 10px; }
+        .coupon-discount { font-size: 1.8rem; font-weight: 700; color: #28a745; margin-bottom: 10px; }
+        .coupon-desc { color: #666; font-size: 0.9rem; margin-bottom: 15px; }
+        .coupon-min { font-size: 0.85rem; color: #999; }
+        
+        .address-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .address-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .address-card h3 { color: #ff7a00; margin-bottom: 10px; }
+        .address-card p { color: #666; margin-bottom: 5px; }
+        
+        .help-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .help-card { background: white; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; cursor: pointer; }
+        .help-card:hover { transform: translateY(-10px); }
+        .help-icon { font-size: 3rem; margin-bottom: 15px; }
+        .help-card h4 { color: #333; margin-bottom: 10px; }
+        .help-card p { color: #666; font-size: 0.9rem; }
+        
+        .profile-card { display: flex; align-items: center; gap: 30px; padding: 30px; }
+        .profile-avatar { width: 100px; height: 100px; background: linear-gradient(135deg, #ff7a00, #ff5200); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; }
+        .profile-info h3 { color: #333; margin-bottom: 5px; }
+        .profile-info p { color: #666; }
+        .profile-badge { display: inline-block; background: #28a745; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; margin-top: 10px; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+        .empty-icon { font-size: 4rem; margin-bottom: 20px; }
+        
+        .flash-messages { position: fixed; top: 80px; right: 20px; z-index: 2000; }
+        .flash { padding: 15px 25px; border-radius: 10px; margin-bottom: 10px; animation: slideIn 0.3s ease; color: white; font-weight: 500; }
+        .flash.success { background: linear-gradient(135deg, #28a745, #20c997); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        
+        @media (max-width: 768px) {
+            .profile-container { padding: 40px 20px; }
+            .tabs { justify-content: center; }
+            .tab-btn { padding: 12px 20px; font-size: 0.9rem; }
+            .profile-card { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/home" class="logo">🍲 HomeMade Pickles</a>
+        <div class="nav-links">
+            <a href="/home">Home</a>
+            <a href="/veg_pickles">Veg Pickles</a>
+            <a href="/non_veg_pickles">Non-Veg</a>
+            <a href="/snacks">Snacks</a>
+            <a href="/cart">Cart</a>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="page-header">
+        <h1>My Profile</h1>
+        <p class="user-greeting">Welcome, {{ user_info[0] }}!</p>
+    </div>
+
+    <div class="profile-container">
+        <div class="card">
+            <div class="card-body profile-card">
+                <div class="profile-avatar">👤</div>
+                <div class="profile-info">
+                    <h3>{{ user_info[0] }}</h3>
+                    <p>{{ user_info[1] }}</p>
+                    {% if user_info[2] %}
+                        <span class="profile-badge">🎉 First Order Pending - Get 30% Off!</span>
+                    {% else %}
+                        <span class="profile-badge" style="background: #6c757d;">Returning Customer</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('orders')">📦 My Orders</button>
+            <button class="tab-btn" onclick="showTab('addresses')">📍 My Addresses</button>
+            <button class="tab-btn" onclick="showTab('coupons')">🎟️ Coupons</button>
+            <button class="tab-btn" onclick="showTab('help')">❓ Help Center</button>
+        </div>
+
+        <div id="orders" class="tab-content active">
+            <div class="card">
+                <div class="card-header"><h3>Order History</h3></div>
+                <div class="card-body">
+                    {% if orders %}
+                        {% for order in orders %}
+                        <div class="order-item">
+                            <div class="order-info">
+                                <h4>Order #{{ order[0] }}</h4>
+                                <p>
+                                {% set items_list = order[1].split(' | ') %}
+                                {% for item in items_list %}
+                                    {{ item }}<br>
+                                {% endfor %}
+                                </p>
+                                <span class="status-badge {{ order[6]|lower }}">{{ order[6] }}</span>
+                            </div>
+                            <div class="order-price">
+                                <div class="order-total">₹{{ order[4] }}</div>
+                                <div class="order-date">{{ order[5] }}</div>
+                                {% if order[3] > 0 %}<div style="color: #28a745; font-size: 0.85rem;">Saved ₹{{ order[3] }}</div>{% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <h3>No Orders Yet</h3>
+                            <p>Start shopping to see your orders here!</p>
+                            <a href="/home" class="btn" style="display: inline-block; margin-top: 20px;">Browse Products</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div id="addresses" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>My Addresses</h3>
+                </div>
+                <div class="card-body">
+                    {% if addresses %}
+                        <div class="address-grid">
+                            {% for address in addresses %}
+                            <div class="address-card">
+                                <h3>{{ address[2] }}</h3>
+                                <p>{{ address[3] }}</p>
+                                <p>{{ address[4] }}, {{ address[5] }} - {{ address[6] }}</p>
+                                <p>📞 {{ address[7] }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">📍</div>
+                            <h3>No Addresses</h3>
+                            <p>Add an address for delivery</p>
+                        </div>
+                    {% endif %}
+                    <a href="/addresses" class="btn" style="display: inline-block; margin-top: 20px;">Manage Addresses</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="coupons" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h3>Available Coupons</h3></div>
+                <div class="card-body">
+                    <div class="coupon-grid">
+                        {% for coupon in coupons %}
+                        <div class="coupon-card" onclick="copyCoupon('{{ coupon[1] }}')">
+                            <div class="coupon-code">{{ coupon[1] }}</div>
+                            <div class="coupon-discount">{{ coupon[2] }}% OFF</div>
+                            <div class="coupon-desc">{{ coupon[4] }}</div>
+                            <div class="coupon-min">Min Order: ₹{{ coupon[3] }}</div>
+                            <div style="margin-top: 10px; color: #ff7a00; font-size: 0.8rem;">Click to copy</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="help" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h3>Help Center</h3></div>
+                <div class="card-body">
+                    <div class="help-grid">
+                        <div class="help-card" onclick="showContactForm()">
+                            <div class="help-icon">📞</div>
+                            <h4>Contact Us</h4>
+                            <p>Call us: +91 98765 43210</p>
+                        </div>
+                        <div class="help-card" onclick="window.location.href='mailto:support@homemadepickles.com'">
+                            <div class="help-icon">✉️</div>
+                            <h4>Email Support</h4>
+                            <p>support@homemadepickles.com</p>
+                        </div>
+                        <div class="help-card">
+                            <div class="help-icon">💬</div>
+                            <h4>Live Chat</h4>
+                            <p>Chat with us 24/7</p>
+                        </div>
+                        <div class="help-card">
+                            <div class="help-icon">🚚</div>
+                            <h4>Track Order</h4>
+                            <p>Check order status in My Orders</p>
+                        </div>
+                        <div class="help-card">
+                            <div class="help-icon">↩️</div>
+                            <h4>Returns</h4>
+                            <p>Easy 7-day return policy</p>
+                        </div>
+                        <div class="help-card" onclick="showFAQ()">
+                            <div class="help-icon">❓</div>
+                            <h4>FAQs</h4>
+                            <p>Frequently asked questions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function copyCoupon(code) {
+            navigator.clipboard.writeText(code);
+            alert('Coupon code ' + code + ' copied to clipboard!');
+        }
+        
+        function showContactForm() { window.location.href = '/contact'; }
+        
+        function showFAQ() { alert('FAQs:\n\n1. How do I track my order?\nGo to Profile > My Orders\n\n2. What is your return policy?\nWe offer 7-day easy returns\n\n3. How do I apply coupons?\nEnter coupon code at checkout'); }
+        
+        setTimeout(() => { document.querySelectorAll('.flash').forEach(f => f.style.display = 'none'); }, 3000);
+    </script>
+</body>
+</html>
+

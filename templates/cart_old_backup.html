@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - HomeMade Pickles & Snacks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #fff7e6, #fff); min-height: 100vh; }
+        
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: linear-gradient(135deg, #ff7a00, #ff5200);
+            padding: 15px 50px; display: flex; justify-content: space-between;
+            align-items: center; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .logo { font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 5px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        
+        .page-header {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('/static/images/Background.jpg');
+            background-size: cover; background-position: center;
+            padding: 120px 50px 60px; text-align: center; color: white;
+        }
+        .page-header h1 { font-size: 2.5rem; }
+        
+        .cart-container { padding: 40px 50px; max-width: 1000px; margin: 0 auto; }
+        
+        .cart-card {
+            background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden; margin-bottom: 20px;
+        }
+        .cart-header {
+            background: linear-gradient(135deg, #ff7a00, #ff5200); padding: 20px 25px; color: white;
+        }
+        .cart-header h2 { font-size: 1.5rem; }
+        
+        .cart-item {
+            display: flex; align-items: center; padding: 20px; border-bottom: 1px solid #eee;
+        }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item img {
+            width: 80px; height: 80px; object-fit: cover; border-radius: 10px; margin-right: 20px;
+        }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h3 { color: #333; margin-bottom: 5px; }
+        .cart-item-info p { color: #666; font-size: 0.9rem; }
+        .cart-item-price {
+            text-align: right;
+        }
+        .cart-item-price .price { font-size: 1.3rem; font-weight: 700; color: #ff7a00; }
+        .remove-btn {
+            background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 5px;
+        }
+        
+        .summary-card {
+            background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 30px;
+        }
+        .summary-card h3 { color: #ff7a00; margin-bottom: 20px; }
+        
+        .summary-row {
+            display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 1.1rem;
+        }
+        .summary-row.total {
+            font-size: 1.5rem; font-weight: 700; color: #ff7a00; border-top: 2px solid #eee; padding-top: 15px; margin-top: 15px;
+        }
+        
+        .coupon-section { margin-top: 20px; padding: 20px; background: #fff7e6; border-radius: 15px; }
+        .coupon-section h4 { margin-bottom: 15px; color: #333; }
+        .coupon-input-group { display: flex; gap: 10px; }
+        .coupon-input {
+            flex: 1; padding: 12px 15px; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem;
+        }
+        
+        .btn {
+            display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #ff7a00, #ff5200);
+            color: white; text-decoration: none; border-radius: 50px; font-weight: 600;
+            transition: all 0.3s ease; border: none; cursor: pointer;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,122,0,0.4); }
+        .btn-full { width: 100%; margin-top: 20px; }
+        
+        .empty-cart { text-align: center; padding: 60px; }
+        .empty-cart h2 { color: #666; margin-bottom: 20px; }
+        
+        .flash-messages { position: fixed; top: 80px; right: 20px; z-index: 2000; }
+        .flash { padding: 15px 25px; border-radius: 10px; margin-bottom: 10px; animation: slideIn 0.3s ease; color: white; font-weight: 500; }
+        .flash.success { background: linear-gradient(135deg, #28a745, #20c997); }
+        .flash.error { background: linear-gradient(135deg, #dc3545, #e74c3c); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        
+        @media (max-width: 768px) {
+            .cart-container { padding: 20px; }
+            .cart-item { flex-direction: column; text-align: center; }
+            .cart-item img { margin: 0 0 15px 0; }
+            .cart-item-price { text-align: center; margin-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/home" class="logo">🍲 HomeMade Pickles</a>
+        <div class="nav-links">
+            <a href="/home">Home</a>
+            <a href="/veg_pickles">Veg Pickles</a>
+            <a href="/non_veg_pickles">Non-Veg</a>
+            <a href="/snacks">Snacks</a>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="page-header">
+        <h1>My Cart</h1>
+    </div>
+
+    <div class="cart-container">
+        {% if cart_items %}
+        <div class="cart-card">
+            <div class="cart-header">
+                <h2>Cart Items</h2>
+            </div>
+            {% for item in cart_items %}
+            <div class="cart-item">
+                <img src="{{ item[4] if item[4] else '/static/images/Background.jpg' }}" alt="{{ item[1] }}">
+                <div class="cart-item-info">
+                    <h3>{{ item[1] }}</h3>
+                    <p>Weight: {{ item[3] if item[3] else '250g' }}</p>
+                </div>
+                <div class="cart-item-price">
+                    <div class="price">₹{{ item[2] }}</div>
+                    <a href="/remove_from_cart/{{ item[0] }}" class="remove-btn">Remove</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="summary-card">
+            <h3>Order Summary</h3>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>₹{{ total }}</span>
+            </div>
+            {% if is_first_order %}
+            <div class="summary-row" style="color: #28a745;">
+                <span>First Order Discount (30%)</span>
+                <span>- ₹{{ discount }}</span>
+            </div>
+            {% elif total > 1000 %}
+            <div class="summary-row" style="color: #28a745;">
+                <span>Bulk Discount (20%)</span>
+                <span>- ₹{{ discount }}</span>
+            </div>
+            {% endif %}
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>₹{{ total - discount }}</span>
+            </div>
+            
+            <a href="/checkout" class="btn btn-full">Proceed to Checkout</a>
+        </div>
+        {% else %}
+        <div class="cart-card">
+            <div class="empty-cart">
+                <h2>Your cart is empty!</h2>
+                <p style="color: #666; margin-bottom: 20px;">Add some delicious pickles and snacks</p>
+                <a href="/home" class="btn">Browse Products</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(f => f.style.display = 'none');
+        }, 3000);
+    </script>
+</body>
+</html>
+

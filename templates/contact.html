@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - HomeMade Pickles & Snacks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background: linear-gradient(135deg, #fff7e6, #fff); min-height: 100vh; }
+        
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: linear-gradient(135deg, #ff7a00, #ff5200);
+            padding: 15px 50px; display: flex; justify-content: space-between;
+            align-items: center; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .logo { font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 5px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        
+        .page-header {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('/static/images/Background.jpg');
+            background-size: cover; background-position: center;
+            padding: 120px 50px 60px; text-align: center; color: white;
+        }
+        .page-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        
+        .contact-container { padding: 40px 50px; max-width: 1000px; margin: 0 auto; }
+        
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 30px; }
+        
+        .contact-card {
+            background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px; text-align: center; transition: all 0.3s ease;
+        }
+        .contact-card:hover { transform: translateY(-10px); }
+        .contact-icon { font-size: 3rem; margin-bottom: 20px; }
+        .contact-card h3 { color: #ff7a00; margin-bottom: 15px; }
+        .contact-card p { color: #666; line-height: 1.6; }
+        .contact-card a { color: #ff7a00; text-decoration: none; }
+        .contact-card a:hover { text-decoration: underline; }
+        
+        .form-card {
+            background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 40px;
+        }
+        .form-card h3 { color: #ff7a00; margin-bottom: 25px; font-size: 1.5rem; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 10px;
+            font-size: 1rem; font-family: 'Poppins', sans-serif; transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ff7a00; }
+        
+        .btn {
+            display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #ff7a00, #ff5200);
+            color: white; text-decoration: none; border-radius: 50px; font-weight: 600;
+            transition: all 0.3s ease; border: none; cursor: pointer;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,122,0,0.4); }
+        
+        .flash-messages { position: fixed; top: 80px; right: 20px; z-index: 2000; }
+        .flash { padding: 15px 25px; border-radius: 10px; margin-bottom: 10px; animation: slideIn 0.3s ease; color: white; font-weight: 500; }
+        .flash.success { background: linear-gradient(135deg, #28a745, #20c997); }
+        .flash.error { background: linear-gradient(135deg, #dc3545, #e74c3c); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        
+        @media (max-width: 768px) { .contact-container { padding: 40px 20px; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/home" class="logo">🍲 HomeMade Pickles</a>
+        <div class="nav-links">
+            <a href="/home">Home</a>
+            <a href="/veg_pickles">Veg Pickles</a>
+            <a href="/non_veg_pickles">Non-Veg</a>
+            <a href="/snacks">Snacks</a>
+            <a href="/about">About</a>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="page-header">
+        <h1>Contact Us</h1>
+    </div>
+
+    <div class="contact-container">
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">📞</div>
+                <h3>Phone</h3>
+                <p>+91 98765 43210</p>
+                <p>Mon - Sat: 9 AM - 6 PM</p>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">✉️</div>
+                <h3>Email</h3>
+                <p><a href="mailto:support@homemadepickles.com">support@homemadepickles.com</a></p>
+                <p><a href="mailto:orders@homemadepickles.com">orders@homemadepickles.com</a></p>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">📍</div>
+                <h3>Address</h3>
+                <p>123 Traditional Lane</p>
+                <p>Food Street, India</p>
+            </div>
+        </div>
+        
+        <div class="form-card">
+            <h3>Send us a Message</h3>
+            <form method="POST" action="/submit_contact">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea name="message" rows="5" placeholder="Write your message" required></textarea>
+                </div>
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => { document.querySelectorAll('.flash').forEach(f => f.style.display = 'none'); }, 3000);
+    </script>
+</body>
+</html>
+

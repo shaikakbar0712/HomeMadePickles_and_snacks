@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - HomeMade Pickles & Snacks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff7e6, #fff);
+            min-height: 100vh;
+        }
+        
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #ff7a00, #ff5200);
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .page-header {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('/static/images/Background.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 120px 50px 60px;
+            text-align: center;
+            color: white;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .checkout-container {
+            padding: 40px 50px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .checkout-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .checkout-header {
+            background: linear-gradient(135deg, #ff7a00, #ff5200);
+            padding: 25px 30px;
+            color: white;
+        }
+        
+        .checkout-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .checkout-content {
+            padding: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        /* Address Selection */
+        .address-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .address-option {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .address-option:hover {
+            border-color: #ff7a00;
+        }
+        
+        .address-option.selected {
+            border-color: #ff7a00;
+            background: #fff7e6;
+        }
+        
+        .address-option input {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .address-option h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .address-option p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Payment Method */
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-option {
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+        }
+        
+        .payment-option:hover {
+            border-color: #ff7a00;
+            transform: translateY(-3px);
+        }
+        
+        .payment-option.selected {
+            border-color: #ff7a00;
+            background: #fff7e6;
+            box-shadow: 0 5px 15px rgba(255,122,0,0.2);
+        }
+        
+        .payment-option input {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .payment-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .payment-option h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .payment-option p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .add-address-link {
+            display: inline-block;
+            color: #ff7a00;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .add-address-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Order Items */
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Pricing */
+        .pricing {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .price-row.discount {
+            color: #28a745;
+        }
+        
+        .price-row.total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff7a00;
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        /* Coupon */
+        .coupon-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff7e6;
+            border-radius: 15px;
+        }
+        
+        .coupon-form h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .coupon-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .coupon-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        
+        .coupon-input:focus {
+            outline: none;
+            border-color: #ff7a00;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ff7a00, #ff5200);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,122,0,0.4);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            margin-top: 25px;
+        }
+        
+        .discount-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .flash-messages {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 2000;
+        }
+        
+        .flash {
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .flash.success { background: linear-gradient(135deg, #28a745, #20c997); }
+        .flash.error { background: linear-gradient(135deg, #dc3545, #e74c3c); }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/home" class="logo">🍲 HomeMade Pickles</a>
+        <div class="nav-links">
+            <a href="/home">Home</a>
+            <a href="/cart">Cart</a>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="page-header">
+        <h1>Checkout</h1>
+    </div>
+
+    <div class="checkout-container">
+        <form method="POST" action="/checkout">
+            <!-- Address Section -->
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <h2>📍 Delivery Address</h2>
+                </div>
+                <div class="checkout-content">
+                    {% if addresses %}
+                        <div class="address-grid">
+                            {% for address in addresses %}
+                            <label class="address-option">
+                                <input type="radio" name="address_id" value="{{ address[0] }}" required>
+                                <h4>{{ address[2] }}</h4>
+                                <p>{{ address[3] }}</p>
+                                <p>{{ address[4] }}, {{ address[5] }} - {{ address[6] }}</p>
+                                <p>📞 {{ address[7] }}</p>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p style="color: #666;">No addresses found. Please add an address.</p>
+                    {% endif %}
+                    <a href="/addresses" class="add-address-link">➕ Add New Address</a>
+                </div>
+            </div>
+
+            <!-- Payment Method Section -->
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <h2>💳 Payment Method</h2>
+                </div>
+                <div class="checkout-content">
+                    <div class="payment-grid">
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="COD" required checked>
+                            <div class="payment-icon">💵</div>
+                            <h4>Cash on Delivery</h4>
+                            <p>Pay when you receive</p>
+                        </label>
+                        
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="UPI" required>
+                            <div class="payment-icon">📱</div>
+                            <h4>UPI Payment</h4>
+                            <p>Google Pay, PhonePe, Paytm</p>
+                        </label>
+                        
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="Card" required>
+                            <div class="payment-icon">💳</div>
+                            <h4>Credit/Debit Card</h4>
+                            <p>Visa, Mastercard, Rupay</p>
+                        </label>
+                        
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="NetBanking" required>
+                            <div class="payment-icon">🏦</div>
+                            <h4>Net Banking</h4>
+                            <p>All major banks</p>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <h2>📦 Order Summary</h2>
+                </div>
+                <div class="checkout-content">
+                    {% for item in cart_items %}
+                    <div class="order-item">
+                        <span>{{ item[1] }}</span>
+                        <span>₹{{ item[2] }}</span>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="pricing">
+                        <div class="price-row">
+                            <span>Subtotal</span>
+                            <span>₹{{ total }}</span>
+                        </div>
+                        
+                        {% if is_first_order %}
+                        <div class="price-row discount">
+                            <span>First Order Discount (30%)</span>
+                            <span>- ₹{{ discount }}</span>
+                        </div>
+                        {% elif total > 1000 %}
+                        <div class="price-row discount">
+                            <span>Bulk Order Discount (20%)</span>
+                            <span>- ₹{{ discount }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="price-row total">
+                            <span>Total to Pay</span>
+                            <span>₹{{ total - discount }}</span>
+                        </div>
+                        
+                        {% if is_first_order %}
+                        <span class="discount-badge">🎉 First Order - 30% Off!</span>
+                        {% elif total > 1000 %}
+                        <span class="discount-badge">💰 Bulk Discount - 20% Off!</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coupon Section -->
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <h2>🎟️ Apply Coupon</h2>
+                </div>
+                <div class="checkout-content">
+                    <div class="coupon-form">
+                        <h4>Have a Coupon Code?</h4>
+                        <div class="coupon-input-group">
+                            <input type="text" name="coupon" class="coupon-input" placeholder="Enter coupon code">
+                            <button type="submit" class="btn">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-submit">Place Order</button>
+        </form>
+    </div>
+
+    <script>
+        // Address selection
+        document.querySelectorAll('.address-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.address-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+        
+        // Payment method selection
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+        
+        // Auto-select first options
+        if (document.querySelector('.address-option')) {
+            document.querySelector('.address-option').classList.add('selected');
+        }
+        if (document.querySelector('.payment-option')) {
+            document.querySelector('.payment-option').classList.add('selected');
+        }
+        
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(f => f.style.display = 'none');
+        }, 3000);
+    </script>
+</body>
+</html>
+
